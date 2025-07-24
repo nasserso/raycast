@@ -35,6 +35,7 @@ class Player {
             const angle_variation = 0;
             
             if (this.isLookingVertical(angle_variation)) {
+                console.log("ok")
                 // horizontal
                 let inverse_tan = -1 / Math.tan(this.angle);
 
@@ -44,9 +45,8 @@ class Player {
                         const error = Math.floor(this.y / 75)*75 - this.x;
 
                         ans.push([
-                            this.x + inverse_tan * (this.y + dista * i - this.y + error),
+                            this.x + inverse_tan * (this.y + dista * i - this.y),
                             Math.floor(this.y / 75)*75 - dista*i,
-                            // (Math.floor(this.y-dista*i)/75)*75
                         ]);
                     } else {
                         ans.push([
@@ -65,12 +65,12 @@ class Player {
                 for (let i = 1; i < 8; i++) {
                     if (this.angle <= Math.PI/2 || this.angle >= 3*Math.PI/2) {
                         ans.push([
-                            this.x + dista * i,
+                            Math.floor(this.x/75)*75 + dista * i,
                             this.y + negative_tan * (this.x + dista * i - this.x)
                         ]);
                     } else {
                         ans.push([
-                            this.x - dista * i,
+                            (Math.floor(this.x)/75)*75 - dista * i,
                             this.y + negative_tan * (this.x - dista * i - this.x)-ERROR
                         ]);
                     }
