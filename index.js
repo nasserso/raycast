@@ -13,6 +13,73 @@ class Player {
         this.height = 10;
     }
 
+    isLookingVertical(angle_variation) {
+        return (
+            this.angle - angle_variation >= Math.PI * 5/4 && this.angle - angle_variation <= 7*Math.PI/4 ||
+            this.angle - angle_variation >= Math.PI /4 && this.angle - angle_variation <= 3*Math.PI/4
+        );
+    }
+
+    drawRayCast2D(level_map) {
+        const NUM_OF_RAYS = 1;
+        const ERROR = 10;
+
+        // TODO acertar smp o outro lado com rounding
+        // verificar de onde vem e arredondar pra baixo ou cima :)
+
+        let ans = [];
+
+
+        for (let ray = 0; ray < NUM_OF_RAYS; ray++) {
+            const dista = 75;
+            const angle_variation = 0;
+            
+            if (this.isLookingVertical(angle_variation)) {
+                // horizontal
+                let inverse_tan = -1 / Math.tan(this.angle);
+
+                // pegar os horizontais
+                for (let i = 1; i < 8; i++) {
+                    if (this.angle >= 3*Math.PI/4 && this.angle <= Math.PI*7/4) {
+                        const error = Math.floor(this.y / 75)*75 - this.x;
+
+                        ans.push([
+                            this.x + inverse_tan * (this.y + dista * i - this.y + error),
+                            Math.floor(this.y / 75)*75 - dista*i,
+                            // (Math.floor(this.y-dista*i)/75)*75
+                        ]);
+                    } else {
+                        ans.push([
+                            this.x - inverse_tan * (this.y + dista * i - this.y) - ERROR,
+                            (Math.floor(this.y+dista*i)/75)*75
+                        ]);
+                    }
+
+                }
+
+
+            } else {
+                // vertical
+                let negative_tan = Math.tan(this.angle);
+
+                for (let i = 1; i < 8; i++) {
+                    if (this.angle <= Math.PI/2 || this.angle >= 3*Math.PI/2) {
+                        ans.push([
+                            this.x + dista * i,
+                            this.y + negative_tan * (this.x + dista * i - this.x)
+                        ]);
+                    } else {
+                        ans.push([
+                            this.x - dista * i,
+                            this.y + negative_tan * (this.x - dista * i - this.x)-ERROR
+                        ]);
+                    }
+                }
+            }
+        }
+        return ans
+    }
+
     move_up() {
         this.x += this.delta_x;
         this.y += this.delta_y;
@@ -35,20 +102,25 @@ class Player {
             this.angle -= 2 * Math.PI;
         }
         this.delta_x = Math.cos(this.angle) * PLAYER_SPEED;
-        this.delta_y = Math.sin(this.angle) * PLAYER_SPEED;
+        this.delta_y = Math.sin(this.angle) * PLAYER_SPEED;// 
     }
 
-    update(context) {
+    update(context, s) {
         context.translate(this.x, this.y);
         context.rotate(this.angle);
         context.fillStyle = "red";
         context.fillRect(0, 0, this.width, this.height);
 
-        const look_height = 20;
+        const look_height = 1200;
         const look_width = 3;
         context.fillRect(2.5, (this.width - look_width)/2, look_height, look_width);
-        
+
         context.setTransform(1, 0, 0, 1, 0, 0);
+
+        context.fillStyle = "green";
+        for (let b of s) {
+            context.fillRect(b[0], b[1], 10, 10);
+        }
     }
 }
 
@@ -136,7 +208,9 @@ class RayCast {
                 this.player.move_down();
             }
         }
-        this.player.update(this.context);
+        const s = this.player.drawRayCast2D(this.level_map);
+        // this.drawRayCast2D(this.player);
+        this.player.update(this.context, s);
     }
 }
 
