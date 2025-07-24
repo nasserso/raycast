@@ -6,7 +6,7 @@ class Player {
     constructor() {
         this.x = 300;
         this.y = 300;
-        this.angle = - Math.PI / 2;
+        this.angle = 3 * Math.PI / 2;
         this.delta_x = Math.cos(this.angle) * PLAYER_SPEED;
         this.delta_y = Math.sin(this.angle) * PLAYER_SPEED;
         this.width = 10;
