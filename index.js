@@ -53,7 +53,7 @@ class Player {
 }
 
 class RayCast {
-    level = [
+    level_map = [
         [1,1,1,1,1,1,1,1],
         [1,0,1,0,0,0,0,1],
         [1,0,1,0,0,0,0,1],
@@ -68,8 +68,8 @@ class RayCast {
         this.canvas = document.createElement("canvas");
         this.canvas.width = 1200;
         this.canvas.height = 600;
-        this.ratioX = this.canvas.width / this.level.length / 2;
-        this.ratioY = this.canvas.height / this.level[0].length;
+        this.ratioX = this.canvas.width / this.level_map.length / 2;
+        this.ratioY = this.canvas.height / this.level_map[0].length;
         this.key = null;
         this.player = new Player();
 
@@ -92,13 +92,21 @@ class RayCast {
     }
 
     draw2dScene = () => {
-        for (let i = 0; i < this.level.length; i++) {
-            for (let j = 0; j < this.level[i].length; j++) {
-                if (this.level[j][i] === 1) {
+        for (let i = 0; i < this.level_map.length; i++) {
+            for (let j = 0; j < this.level_map[i].length; j++) {
+                if (this.level_map[j][i] === 1) {
                     this.context.fillStyle = "white";
                 } else {
                     this.context.fillStyle = "black";
                 }
+                this.context.strokeStyle = 'blue';
+                this.context.strokeRect(
+                    i * this.ratioX,
+                    j * this.ratioY,
+                    this.ratioX,
+                    this.ratioY
+                );
+                this.context.border = "1px solid gray"
                 this.context.fillRect(
                     i * this.ratioX,
                     j * this.ratioY,
