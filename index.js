@@ -35,7 +35,6 @@ class Player {
             const angle_variation = 0;
             
             if (this.isLookingVertical(angle_variation)) {
-                console.log("ok")
                 // horizontal
                 let inverse_tan = -1 / Math.tan(this.angle);
 
@@ -51,7 +50,7 @@ class Player {
                     } else {
                         ans.push([
                             this.x - inverse_tan * (this.y + dista * i - this.y) - ERROR,
-                            (Math.floor(this.y+dista*i)/75)*75
+                            Math.floor(this.y/75)*75 + dista * i
                         ]);
                     }
 
@@ -70,7 +69,7 @@ class Player {
                         ]);
                     } else {
                         ans.push([
-                            (Math.floor(this.x)/75)*75 - dista * i,
+                            Math.floor(this.x / 75)*75 - dista * i,
                             this.y + negative_tan * (this.x - dista * i - this.x)-ERROR
                         ]);
                     }
