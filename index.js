@@ -32,47 +32,35 @@ class Player {
 
         for (let ray = 0; ray < NUM_OF_RAYS; ray++) {
             const dista = 75;
-            const angle_variation = 0;
             
-            if (this.isLookingVertical(angle_variation)) {
-                // horizontal
-                let inverse_tan = -1 / Math.tan(this.angle);
+            let inverse_tan = -1 / Math.tan(this.angle);
+            let negative_tan = Math.tan(this.angle);
 
-                // pegar os horizontais
-                for (let i = 1; i < 8; i++) {
-                    if (this.angle >= 3*Math.PI/4 && this.angle <= Math.PI*7/4) {
-                        const error = Math.floor(this.y / 75)*75 - this.x;
-
-                        ans.push([
-                            this.x + inverse_tan * (this.y + dista * i - this.y),
-                            Math.floor(this.y / 75)*75 - dista*i,
-                        ]);
-                    } else {
-                        ans.push([
-                            this.x - inverse_tan * (this.y + dista * i - this.y) - ERROR,
-                            Math.floor(this.y/75)*75 + dista * i
-                        ]);
-                    }
-
+            for (let i = 1; i < 8; i++) {
+                // horizontal dots
+                if (this.angle >= Math.PI) {
+                    ans.push([
+                        this.x + inverse_tan * (this.y + dista * i - this.y),
+                        Math.floor(this.y / 75)*75 - dista*i,
+                    ]);
+                } else {
+                    ans.push([
+                        this.x - inverse_tan * (this.y + dista * i - this.y) - ERROR,
+                        Math.floor(this.y/75)*75 + dista * i
+                    ]);
                 }
 
-
-            } else {
-                // vertical
-                let negative_tan = Math.tan(this.angle);
-
-                for (let i = 1; i < 8; i++) {
-                    if (this.angle <= Math.PI/2 || this.angle >= 3*Math.PI/2) {
-                        ans.push([
-                            Math.floor(this.x/75)*75 + dista * i,
-                            this.y + negative_tan * (this.x + dista * i - this.x)
-                        ]);
-                    } else {
-                        ans.push([
-                            Math.floor(this.x / 75)*75 - dista * i,
-                            this.y + negative_tan * (this.x - dista * i - this.x)-ERROR
-                        ]);
-                    }
+                // vertical dots
+                if (this.angle >= 3*Math.PI/2 || this.angle <= Math.PI/2) {
+                    ans.push([
+                        Math.floor(this.x/75)*75 + dista * i,
+                        this.y + negative_tan * (this.x + dista * i - this.x)
+                    ]);
+                } else {
+                    ans.push([
+                        Math.floor(this.x / 75)*75 - dista * i,
+                        this.y + negative_tan * (this.x - dista * i - this.x)-ERROR
+                    ]);
                 }
             }
         }
