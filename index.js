@@ -34,11 +34,11 @@ class Player {
                 if (this.angle >= Math.PI) {
                     ans.push([
                         delta_y + this.x - inverse_tan * dista * (i-1), // x
-                        (Math.floor(this.y / dista)*dista) - dista*(i-1), // y
+                        (Math.floor(this.y / dista)*dista) - dista * (i-1), // y
                     ]);
                 } else {
                     ans.push([
-                        -delta_y + this.x + inverse_tan * dista * i - ERROR, // x
+                        delta_y + this.x + inverse_tan * dista * i - ERROR, // x
                         Math.floor(this.y / dista)*dista + dista * i // y
                     ]);
                 }
