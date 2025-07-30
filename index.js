@@ -13,53 +13,50 @@ class Player {
         this.height = 10;
     }
 
-    isLookingVertical(angle_variation) {
-        return (
-            this.angle - angle_variation >= Math.PI * 5/4 && this.angle - angle_variation <= 7*Math.PI/4 ||
-            this.angle - angle_variation >= Math.PI /4 && this.angle - angle_variation <= 3*Math.PI/4
-        );
-    }
-
     drawRayCast2D(level_map) {
         const NUM_OF_RAYS = 1;
         const ERROR = 10;
 
-        // TODO acertar smp o outro lado com rounding
-        // verificar de onde vem e arredondar pra baixo ou cima :)
-
         let ans = [];
-
 
         for (let ray = 0; ray < NUM_OF_RAYS; ray++) {
             const dista = 75;
-            
-            let inverse_tan = -1 / Math.tan(this.angle);
+
+            let inverse_tan = 1 / Math.tan(this.angle);
             let negative_tan = Math.tan(this.angle);
 
             for (let i = 1; i < 8; i++) {
+                const y_floor = Math.floor(this.y / dista) * dista;
+                const square_delta_y = this.y - y_floor;
+                const delta_y = -square_delta_y * inverse_tan;
+
                 // horizontal dots
                 if (this.angle >= Math.PI) {
                     ans.push([
-                        this.x + inverse_tan * (this.y + dista * i - this.y),
-                        Math.floor(this.y / 75)*75 - dista*i,
+                        delta_y + this.x - inverse_tan * dista * (i-1), // x
+                        (Math.floor(this.y / dista)*dista) - dista*(i-1), // y
                     ]);
                 } else {
                     ans.push([
-                        this.x - inverse_tan * (this.y + dista * i - this.y) - ERROR,
-                        Math.floor(this.y/75)*75 + dista * i
+                        -delta_y + this.x + inverse_tan * dista * i - ERROR, // x
+                        Math.floor(this.y / dista)*dista + dista * i // y
                     ]);
                 }
+
+                const x_floor = Math.floor(this.x / dista) * dista;
+                const square_delta_x = this.x - x_floor;
+                const delta_x = -square_delta_x * negative_tan;
 
                 // vertical dots
                 if (this.angle >= 3*Math.PI/2 || this.angle <= Math.PI/2) {
                     ans.push([
-                        Math.floor(this.x/75)*75 + dista * i,
-                        this.y + negative_tan * (this.x + dista * i - this.x)
+                        Math.floor(this.x / dista)*dista + dista * i, // x
+                        delta_x + this.y + negative_tan * dista * i, // y
                     ]);
                 } else {
                     ans.push([
-                        Math.floor(this.x / 75)*75 - dista * i,
-                        this.y + negative_tan * (this.x - dista * i - this.x)-ERROR
+                        ((Math.floor(this.x / dista)*dista) + dista) - dista * i, // x
+                        delta_x + this.y - negative_tan * dista * (i-1) - ERROR, // y
                     ]);
                 }
             }
