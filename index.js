@@ -38,7 +38,7 @@ class Player {
         this.delta_y = Math.sin(this.angle) * PLAYER_SPEED;// 
     }
 
-    update(context, s) {
+    update(context) {
         context.translate(this.x, this.y);
         context.rotate(this.angle);
         context.fillStyle = "red";
@@ -49,11 +49,6 @@ class Player {
         context.fillRect(2.5, (this.width - look_width)/2, look_height, look_width);
 
         context.setTransform(1, 0, 0, 1, 0, 0);
-
-        context.fillStyle = "green";
-        for (let b of s) {
-            context.fillRect(b[0], b[1], 10, 10);
-        }
     }
 }
 
@@ -142,7 +137,12 @@ class RayCast {
             }
         }
         const s = this.drawRayCast2D(this.player);
-        this.player.update(this.context, s);
+        this.player.update(this.context);
+
+        this.context.fillStyle = "green";
+        for (let b of s) {
+            this.context.fillRect(b[0], b[1], 10, 10);
+        }
     }
 
     drawRayCast2D(from_object) {
