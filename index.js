@@ -13,57 +13,6 @@ class Player {
         this.height = 10;
     }
 
-    drawRayCast2D(level_map) {
-        const NUM_OF_RAYS = 1;
-        const ERROR = 10;
-
-        let ans = [];
-
-        for (let ray = 0; ray < NUM_OF_RAYS; ray++) {
-            const dista = 75;
-
-            let inverse_tan = 1 / Math.tan(this.angle);
-            let negative_tan = Math.tan(this.angle);
-
-            for (let i = 1; i < 8; i++) {
-                const y_floor = Math.floor(this.y / dista) * dista;
-                const square_delta_y = this.y - y_floor;
-                const delta_y = -square_delta_y * inverse_tan;
-
-                // horizontal dots
-                if (this.angle >= Math.PI) {
-                    ans.push([
-                        delta_y + this.x - inverse_tan * dista * (i-1), // x
-                        (Math.floor(this.y / dista)*dista) - dista * (i-1), // y
-                    ]);
-                } else {
-                    ans.push([
-                        delta_y + this.x + inverse_tan * dista * i - ERROR, // x
-                        Math.floor(this.y / dista)*dista + dista * i // y
-                    ]);
-                }
-
-                const x_floor = Math.floor(this.x / dista) * dista;
-                const square_delta_x = this.x - x_floor;
-                const delta_x = -square_delta_x * negative_tan;
-
-                // vertical dots
-                if (this.angle >= 3*Math.PI/2 || this.angle <= Math.PI/2) {
-                    ans.push([
-                        Math.floor(this.x / dista)*dista + dista * i, // x
-                        delta_x + this.y + negative_tan * dista * i, // y
-                    ]);
-                } else {
-                    ans.push([
-                        ((Math.floor(this.x / dista)*dista) + dista) - dista * i, // x
-                        delta_x + this.y - negative_tan * dista * (i-1) - ERROR, // y
-                    ]);
-                }
-            }
-        }
-        return ans
-    }
-
     move_up() {
         this.x += this.delta_x;
         this.y += this.delta_y;
@@ -192,9 +141,57 @@ class RayCast {
                 this.player.move_down();
             }
         }
-        const s = this.player.drawRayCast2D(this.level_map);
-        // this.drawRayCast2D(this.player);
+        const s = this.drawRayCast2D(this.player);
         this.player.update(this.context, s);
+    }
+
+    drawRayCast2D(from_object) {
+        const NUM_OF_RAYS = 1;
+        const ERROR = 10;
+
+        let ans = [];
+
+        for (let ray = 0; ray < NUM_OF_RAYS; ray++) {
+            let inverse_tan = 1 / Math.tan(from_object.angle);
+            let negative_tan = Math.tan(from_object.angle);
+
+            for (let i = 1; i < 8; i++) {
+                const y_floor = Math.floor(from_object.y / this.ratioX) * this.ratioX;
+                const square_delta_y = from_object.y - y_floor;
+                const delta_y = -square_delta_y * inverse_tan;
+
+                // horizontal dots
+                if (from_object.angle >= Math.PI) { // up
+                    ans.push([
+                        delta_y + from_object.x - inverse_tan * this.ratioX * (i-1), // x
+                        (Math.floor(from_object.y / this.ratioX)*this.ratioX) - this.ratioX * (i-1), // y
+                    ]);
+                } else { // down
+                    ans.push([
+                        delta_y + from_object.x + inverse_tan * this.ratioX * i - ERROR, // x
+                        Math.floor(from_object.y / this.ratioX)*this.ratioX + this.ratioX * i // y
+                    ]);
+                }
+
+                const x_floor = Math.floor(from_object.x / this.ratioX) * this.ratioX;
+                const square_delta_x = from_object.x - x_floor;
+                const delta_x = -square_delta_x * negative_tan;
+
+                // vertical dots
+                if (from_object.angle >= 3*Math.PI/2 || from_object.angle <= Math.PI/2) { // left
+                    ans.push([
+                        Math.floor(from_object.x / this.ratioX)*this.ratioX + this.ratioX * i, // x
+                        delta_x + from_object.y + negative_tan * this.ratioX * i, // y
+                    ]);
+                } else { // right
+                    ans.push([
+                        ((Math.floor(from_object.x / this.ratioX)*this.ratioX) + this.ratioX) - this.ratioX * i, // x
+                        delta_x + from_object.y - negative_tan * this.ratioX * (i-1) - ERROR, // y
+                    ]);
+                }
+            }
+        }
+        return ans
     }
 }
 
