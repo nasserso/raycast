@@ -46,7 +46,7 @@ class Player {
 
         const look_height = 1200;
         const look_width = 3;
-        context.fillRect(2.5, (this.width - look_width)/2, look_height, look_width);
+        // context.fillRect(2.5, (this.width - look_width)/2, look_height, look_width);
 
         context.setTransform(1, 0, 0, 1, 0, 0);
     }
@@ -55,6 +55,16 @@ class Player {
 class RayCast {
     level_map = [
         [1,1,1,1,1,1,1,1],
+        [1,0,1,0,0,1,0,1],
+        [1,0,1,0,0,0,0,1],
+        [1,0,1,0,0,1,0,1],
+        [1,0,0,0,0,0,0,1],
+        [1,0,1,0,0,1,0,1],
+        [1,0,0,0,0,0,0,1],
+        [1,1,1,1,1,1,1,1],
+    ];
+    level_map_mark = [
+        [1,1,1,1,1,1,1,1],
         [1,0,1,0,0,0,0,1],
         [1,0,1,0,0,0,0,1],
         [1,0,1,0,0,0,0,1],
@@ -62,7 +72,7 @@ class RayCast {
         [1,0,0,0,0,1,0,1],
         [1,0,0,0,0,0,0,1],
         [1,1,1,1,1,1,1,1],
-    ]
+    ];
 
     constructor() {
         this.canvas = document.createElement("canvas");
@@ -96,8 +106,10 @@ class RayCast {
     draw2dScene = () => {
         for (let i = 0; i < this.level_map.length; i++) {
             for (let j = 0; j < this.level_map[i].length; j++) {
-                if (this.level_map[j][i] === 1) {
+                if (this.level_map_mark[j][i] === 1) {
                     this.context.fillStyle = "white";
+                } else if (this.level_map_mark[j][i] === 2) {
+                    this.context.fillStyle = "yellow";
                 } else {
                     this.context.fillStyle = "black";
                 }
@@ -116,6 +128,46 @@ class RayCast {
                     this.ratioY
                 );
             }
+        }
+
+        for(let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                this.level_map_mark[i][j] = this.level_map[i][j];
+            }
+        }
+    }
+
+    draw3dScene = (points) => {
+        const DELTA_MOVE = this.canvas.width / 2;
+        this.context.strokeStyle = 'blue';
+        const HEIGHT_OFFSET = 160;
+
+        for (let i = 0; i < 60; i++) {
+            let distance = this.pointDistance([this.player.x, this.player.y], points[i]);
+            
+            const distance_player_ray_angle = this.player.angle - points[i][2];
+
+            distance = distance * Math.cos(distance_player_ray_angle);
+
+            let line_height = (this.ratioX * this.canvas.height) / distance
+            if (line_height > this.canvas.height) {
+                line_height = this.canvas.height;
+            }
+
+            const lineOffset = HEIGHT_OFFSET - line_height / 2;
+
+            if (points[i][3] === 1) {
+                this.context.fillStyle = "#008817ff";
+            } else {
+                this.context.fillStyle = "#00ff2a";
+            }
+
+            this.context.fillRect(
+                (i*10) + DELTA_MOVE,
+                lineOffset,
+                5,
+                line_height,
+            );
         }
     }
 
@@ -138,13 +190,22 @@ class RayCast {
                 this.player.move_down();
             }
         }
-        const s = this.drawRayCast2D(this.player);
+        const points = this.drawRayCast2D(this.player);
         this.player.update(this.context);
 
         this.context.fillStyle = "green";
-        for (let b of s) {
-            this.context.fillRect(b[0], b[1], 10, 10);
+        for (let b of points) {
+            this.context.beginPath(); // Start a new path
+            this.context.moveTo(this.player.x, this.player.y); // Move the pen to (30, 50)
+            this.context.lineTo(b[0], b[1]); // Draw a line to (150, 100)
+            this.context.stroke(); // Render the path
         }
+
+        this.draw3dScene(points);
+    }
+
+    pointDistance(p1, p2) {
+        return  Math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2);
     }
 
     drawRayCast2D(from_object) {
