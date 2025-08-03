@@ -104,35 +104,33 @@ class RayCast {
     }
 
     draw2dScene = () => {
+        const drawSquare = (i, j) => {
+            // draw square border
+            this.context.strokeStyle = 'blue';
+            this.context.strokeRect(
+                i * this.ratioX,
+                j * this.ratioY,
+                this.ratioX,
+                this.ratioY
+            );
+
+            // draw square
+            if (this.level_map[j][i] === 1) {
+                this.context.fillStyle = "white";
+            } else {
+                this.context.fillStyle = "black";
+            }
+            this.context.fillRect(
+                i * this.ratioX,
+                j * this.ratioY,
+                this.ratioX,
+                this.ratioY
+            );
+        };
+
         for (let i = 0; i < this.level_map.length; i++) {
             for (let j = 0; j < this.level_map[i].length; j++) {
-                if (this.level_map_mark[j][i] === 1) {
-                    this.context.fillStyle = "white";
-                } else if (this.level_map_mark[j][i] === 2) {
-                    this.context.fillStyle = "yellow";
-                } else {
-                    this.context.fillStyle = "black";
-                }
-                this.context.strokeStyle = 'blue';
-                this.context.strokeRect(
-                    i * this.ratioX,
-                    j * this.ratioY,
-                    this.ratioX,
-                    this.ratioY
-                );
-                this.context.border = "1px solid gray"
-                this.context.fillRect(
-                    i * this.ratioX,
-                    j * this.ratioY,
-                    this.ratioX,
-                    this.ratioY
-                );
-            }
-        }
-
-        for(let i = 0; i < 8; i++) {
-            for (let j = 0; j < 8; j++) {
-                this.level_map_mark[i][j] = this.level_map[i][j];
+                drawSquare(i,j)
             }
         }
     }
