@@ -70,7 +70,7 @@ class RayCast {
         this.canvas.height = 600;
         this.ratioX = this.canvas.width / this.level_map.length / 2;
         this.ratioY = this.canvas.height / this.level_map[0].length;
-        this.key = null;
+        this.keys = [];
         this.player = new Player();
 
         this.context = this.canvas.getContext("2d");
@@ -80,10 +80,12 @@ class RayCast {
         this.interval = setInterval(this.updateScreen.bind(this), HERTZ);
 
         window.addEventListener('keydown', function (e) {
-            this.key = e.key;
+            if (this.keys.indexOf(e.key) === -1) {
+                this.keys.push(e.key);
+            }
         }.bind(this))
         window.addEventListener('keyup', function (e) {
-            this.key = null;
+            this.keys = this.keys.filter((key) => key !== e.key);
         }.bind(this))
     }
 
@@ -122,17 +124,17 @@ class RayCast {
 
         this.draw2dScene();
 
-        if (this.key) {
-            if (this.key === "w") {
+        if (this.keys) {
+            if (this.keys.includes("w")) {
                 this.player.move_up();
             }
-            if (this.key === "a") {
+            if (this.keys.includes("a")) {
                 this.player.move_left();
             }
-            if (this.key === "d") {
+            if (this.keys.includes("d")) {
                 this.player.move_right();
             }
-            if (this.key == "s") {
+            if (this.keys.includes("s")) {
                 this.player.move_down();
             }
         }
