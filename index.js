@@ -4,8 +4,9 @@ const PLAYER_ANGLE_SPEED = 0.1;
 const GREEN = "#00ff2a";
 const DARK_GREEN = "#008817ff";
 const BLUE = "blue";
-const WHITE = "WHITE";
-const BLACK = "BLACK";
+const WHITE = "white";
+const BLACK = "black";
+const RED = "red";
 
 class Player {
     constructor() {
@@ -43,15 +44,16 @@ class Player {
         this.delta_y = Math.sin(this.angle) * PLAYER_SPEED;// 
     }
 
-    update(context) {
+    draw(context) {
         context.translate(this.x, this.y);
         context.rotate(this.angle);
-        context.fillStyle = "red";
-        context.fillRect(0, 0, this.width, this.height);
+        context.fillStyle = RED;
+        context.fillRect(-this.height, -this.width / 2, this.width, this.height);
 
-        const look_height = 1200;
-        const look_width = 3;
-        // context.fillRect(2.5, (this.width - look_width)/2, look_height, look_width);
+        // cast player looking ray
+        // const ray_height = 1200;
+        // const ray_width = 3;
+        // context.fillRect(2.5, (this.width - ray_width)/2, ray_height, ray_width);
 
         context.setTransform(1, 0, 0, 1, 0, 0);
     }
@@ -200,7 +202,7 @@ class RayCast {
         }
 
         const raycast_points = this.rayCast(this.player);
-        this.player.update(this.context);
+        this.player.draw(this.context);
         this.drawRayCast2D(raycast_points);
         this.draw3dScene(raycast_points);
     }
