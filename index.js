@@ -215,48 +215,45 @@ class RayCast {
         const NUM_OF_RAYS = 60;
         const ERROR = 10;
         const ONE_DEGREE = Math.PI / 180;
+        const THIRTY_DEGREES = ONE_DEGREE * 30;
 
         let points = [];
         let closest_points = [];
 
         const object_position = [from_object.x, from_object.y];
 
-        const start_angle = from_object.angle - (ONE_DEGREE * 30);
+        const start_angle = from_object.angle - THIRTY_DEGREES;
+
+        let map_x, map_y, x, y;
 
         for (let ray = 0; ray < NUM_OF_RAYS; ray++) {
             const angle = start_angle + (ray * ONE_DEGREE);
             let inverse_tan = 1 / Math.tan(angle);
             let negative_tan = Math.tan(angle);
 
-            for (let i = 1; i < 8; i++) {
+            for (let i = 1; i < this.level_map.length; i++) {
                 const y_floor = Math.floor(from_object.y / this.ratioX) * this.ratioX;
                 const square_delta_y = from_object.y - y_floor;
                 const delta_y = -square_delta_y * inverse_tan;
 
                 // horizontal dots
                 if (angle >= Math.PI) { // up
-                    const x = delta_y + from_object.x - inverse_tan * this.ratioX * (i-1);
-                    const y = (Math.floor(from_object.y / this.ratioX)*this.ratioX) - this.ratioX * (i-1);
+                    x = delta_y + from_object.x - inverse_tan * this.ratioX * (i-1);
+                    y = (Math.floor(from_object.y / this.ratioX)*this.ratioX) - this.ratioX * (i-1);
 
-                    const map_x = Math.floor(x / this.ratioX);
-                    const map_y = Math.floor(y / this.ratioX)-1;
-
-                    if (map_x >= 0 && map_y >= 0 && map_x < 8 && map_y < 8) {
-                        if (this.level_map[map_y][map_x] === 1) {
-                            points.push([x,y,angle,0]);
-                        }
-                    }
+                    map_x = Math.floor(x / this.ratioX);
+                    map_y = Math.floor(y / this.ratioX)-1;
                 } else { // down
-                    const x = delta_y + from_object.x + inverse_tan * this.ratioX * i - ERROR;
-                    const y = Math.floor(from_object.y / this.ratioX)*this.ratioX + this.ratioX * i;
+                    x = delta_y + from_object.x + inverse_tan * this.ratioX * i;
+                    y = Math.floor(from_object.y / this.ratioX)*this.ratioX + this.ratioX * i;
 
-                    const map_x = Math.floor(x / this.ratioX);
-                    const map_y = Math.floor(y / this.ratioX);
+                    map_x = Math.floor(x / this.ratioX);
+                    map_y = Math.floor(y / this.ratioX);
+                }
 
-                    if (map_x >= 0 && map_y >= 0 && map_x < 8 && map_y < 8) {
-                        if (this.level_map[map_y][map_x] === 1) {
-                            points.push([x,y,angle,0])
-                        }
+                if (map_x >= 0 && map_y >= 0 && map_x < this.level_map.length && map_y < this.level_map.length) {
+                    if (this.level_map[map_y][map_x] === 1) {
+                        points.push([x,y,angle,0])
                     }
                 }
 
@@ -266,28 +263,22 @@ class RayCast {
 
                 // vertical dots
                 if (angle >= 3*Math.PI/2 || angle <= Math.PI/2) { // left
-                    const x = Math.floor(from_object.x / this.ratioX)*this.ratioX + this.ratioX * i;
-                    const y = delta_x + from_object.y + negative_tan * this.ratioX * i;
+                    x = Math.floor(from_object.x / this.ratioX)*this.ratioX + this.ratioX * i;
+                    y = delta_x + from_object.y + negative_tan * this.ratioX * i;
 
-                    const map_x = Math.floor(x / this.ratioX);
-                    const map_y = Math.floor(y / this.ratioX);
-
-                    if (map_x >= 0 && map_y >= 0 && map_x < 8 && map_y < 8) {
-                        if (this.level_map[map_y][map_x] === 1) {
-                            points.push([x,y,angle,1])
-                        }
-                    }
+                    map_x = Math.floor(x / this.ratioX);
+                    map_y = Math.floor(y / this.ratioX);
                 } else { // right
-                    const x = ((Math.floor(from_object.x / this.ratioX)*this.ratioX) + this.ratioX) - this.ratioX * i;
-                    const y = delta_x + from_object.y - negative_tan * this.ratioX * (i-1) - ERROR;
+                    x = ((Math.floor(from_object.x / this.ratioX)*this.ratioX) + this.ratioX) - this.ratioX * i;
+                    y = delta_x + from_object.y - negative_tan * this.ratioX * (i-1);
 
-                    const map_x = Math.floor(x / this.ratioX)-1;
-                    const map_y = Math.floor(y / this.ratioX);
+                    map_x = Math.floor(x / this.ratioX)-1;
+                    map_y = Math.floor(y / this.ratioX);
+                }
 
-                    if (map_x >= 0 && map_y >= 0 && map_x < 8 && map_y < 8) {
-                        if (this.level_map[map_y][map_x] === 1) {
-                            points.push([x,y,angle,1])
-                        }
+                if (map_x >= 0 && map_y >= 0 && map_x < this.level_map.length && map_y < this.level_map.length) {
+                    if (this.level_map[map_y][map_x] === 1) {
+                        points.push([x,y,angle,1])
                     }
                 }
             }
