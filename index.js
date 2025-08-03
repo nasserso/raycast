@@ -1,6 +1,11 @@
 const HERTZ = 1000/20;
 const PLAYER_SPEED = 5;
 const PLAYER_ANGLE_SPEED = 0.1;
+const GREEN = "#00ff2a";
+const DARK_GREEN = "#008817ff";
+const BLUE = "blue";
+const WHITE = "WHITE";
+const BLACK = "BLACK";
 
 class Player {
     constructor() {
@@ -96,7 +101,7 @@ class RayCast {
     draw2dScene = () => {
         const drawSquare = (i, j) => {
             // draw square border
-            this.context.strokeStyle = 'blue';
+            this.context.strokeStyle = BLUE;
             this.context.strokeRect(
                 i * this.ratioX,
                 j * this.ratioY,
@@ -106,9 +111,9 @@ class RayCast {
 
             // draw square
             if (this.level_map[j][i] === 1) {
-                this.context.fillStyle = "white";
+                this.context.fillStyle = WHITE;
             } else {
-                this.context.fillStyle = "black";
+                this.context.fillStyle = BLACK;
             }
             this.context.fillRect(
                 i * this.ratioX,
@@ -126,34 +131,38 @@ class RayCast {
     }
 
     draw3dScene = (points) => {
-        const DELTA_MOVE = this.canvas.width / 2;
-        this.context.strokeStyle = 'blue';
+        const SCENE_WIDTH_START = this.canvas.width / 2;
         const HEIGHT_OFFSET = 160;
 
         for (let i = 0; i < 60; i++) {
-            let distance = this.pointDistance([this.player.x, this.player.y], points[i]);
-            
+            let distance_with_distortion = this.pointDistance(
+                [this.player.x, this.player.y],
+                points[i]
+            );
+
             const distance_player_ray_angle = this.player.angle - points[i][2];
 
-            distance = distance * Math.cos(distance_player_ray_angle);
+            // remove fish eye effect
+            const distance_normalized = distance_with_distortion * Math.cos(distance_player_ray_angle);
 
-            let line_height = (this.ratioX * this.canvas.height) / distance
+            let line_height = (this.ratioX * this.canvas.height) / distance_normalized;
             if (line_height > this.canvas.height) {
                 line_height = this.canvas.height;
             }
-
-            const lineOffset = HEIGHT_OFFSET - line_height / 2;
+            const OFFSET_ADJUST = 40;
+            const LINE_OFFSET = HEIGHT_OFFSET - line_height / 2 + OFFSET_ADJUST;
+            const LINE_WIDTH = 5;
 
             if (points[i][3] === 1) {
-                this.context.fillStyle = "#008817ff";
+                this.context.fillStyle = DARK_GREEN;
             } else {
-                this.context.fillStyle = "#00ff2a";
+                this.context.fillStyle = GREEN;
             }
 
             this.context.fillRect(
-                (i*10) + DELTA_MOVE,
-                lineOffset,
-                5,
+                (i*10) + SCENE_WIDTH_START,
+                LINE_OFFSET,
+                LINE_WIDTH,
                 line_height,
             );
         }
