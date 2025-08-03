@@ -7,6 +7,8 @@ const BLUE = "blue";
 const WHITE = "white";
 const BLACK = "black";
 const RED = "red";
+const HORIZONTAL_WALL = 0;
+const VERTICAL_WALL = 1;
 
 class Player {
     constructor() {
@@ -138,11 +140,11 @@ class RayCast {
 
         for (let i = 0; i < points.length; i++) {
             let distance_with_distortion = this.pointDistance(
-                [this.player.x, this.player.y],
+                this.player,
                 points[i]
             );
 
-            const distance_player_ray_angle = this.player.angle - points[i][2];
+            const distance_player_ray_angle = this.player.angle - points[i].angle;
 
             // remove fish eye effect
             const distance_normalized = distance_with_distortion * Math.cos(distance_player_ray_angle);
@@ -155,7 +157,7 @@ class RayCast {
             const LINE_OFFSET = HEIGHT_OFFSET - line_height / 2 + OFFSET_ADJUST;
             const LINE_WIDTH = 5;
 
-            if (points[i][3] === 1) {
+            if (points[i].wall === VERTICAL_WALL) {
                 this.context.fillStyle = DARK_GREEN;
             } else {
                 this.context.fillStyle = GREEN;
@@ -176,7 +178,7 @@ class RayCast {
         for (const point of points) {
             this.context.beginPath();
             this.context.moveTo(this.player.x, this.player.y);
-            this.context.lineTo(point[0], point[1]);
+            this.context.lineTo(point.x, point.y);
             this.context.stroke();
         }
     }
@@ -208,7 +210,7 @@ class RayCast {
     }
 
     pointDistance(p1, p2) {
-        return  Math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2);
+        return  Math.sqrt((p1.x - p2.x)**2 + (p1.y - p2.y)**2);
     }
 
     rayCast(from_object) {
@@ -231,11 +233,11 @@ class RayCast {
             let negative_tan = Math.tan(angle);
 
             for (let i = 1; i < this.level_map.length; i++) {
+                // horizontal dots
                 const y_floor = Math.floor(from_object.y / this.ratioX) * this.ratioX;
                 const square_delta_y = from_object.y - y_floor;
                 const delta_y = -square_delta_y * inverse_tan;
 
-                // horizontal dots
                 if (angle >= Math.PI) { // up
                     x = delta_y + from_object.x - inverse_tan * this.ratioX * (i-1);
                     y = (Math.floor(from_object.y / this.ratioX)*this.ratioX) - this.ratioX * (i-1);
@@ -252,15 +254,15 @@ class RayCast {
 
                 if (map_x >= 0 && map_y >= 0 && map_x < this.level_map.length && map_y < this.level_map.length) {
                     if (this.level_map[map_y][map_x] === 1) {
-                        points.push([x,y,angle,0])
+                        points.push({x, y, angle, wall: HORIZONTAL_WALL})
                     }
                 }
 
+                // vertical dots
                 const x_floor = Math.floor(from_object.x / this.ratioX) * this.ratioX;
                 const square_delta_x = from_object.x - x_floor;
                 const delta_x = -square_delta_x * negative_tan;
 
-                // vertical dots
                 if (angle >= 3*Math.PI/2 || angle <= Math.PI/2) { // left
                     x = Math.floor(from_object.x / this.ratioX)*this.ratioX + this.ratioX * i;
                     y = delta_x + from_object.y + negative_tan * this.ratioX * i;
@@ -277,17 +279,17 @@ class RayCast {
 
                 if (map_x >= 0 && map_y >= 0 && map_x < this.level_map.length && map_y < this.level_map.length) {
                     if (this.level_map[map_y][map_x] === 1) {
-                        points.push([x,y,angle,1])
+                        points.push({x, y, angle, wall: VERTICAL_WALL})
                     }
                 }
             }
 
             if (points.length > 0) {
                 let closest = points[0];
-                let minimum_distance = this.pointDistance(object_position, closest);
+                let minimum_distance = this.pointDistance(from_object, closest);
 
                 for (const point of points) {
-                    const distance = this.pointDistance(object_position, point);
+                    const distance = this.pointDistance(from_object, point);
                     if (distance < minimum_distance) {
                         minimum_distance = distance;
                         closest = point;
