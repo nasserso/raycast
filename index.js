@@ -213,7 +213,6 @@ class RayCast {
 
     rayCast(from_object) {
         const NUM_OF_RAYS = 60;
-        const ERROR = 10;
         const ONE_DEGREE = Math.PI / 180;
         const THIRTY_DEGREES = ONE_DEGREE * 30;
 
