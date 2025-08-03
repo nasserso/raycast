@@ -134,7 +134,7 @@ class RayCast {
         const SCENE_WIDTH_START = this.canvas.width / 2;
         const HEIGHT_OFFSET = 160;
 
-        for (let i = 0; i < 60; i++) {
+        for (let i = 0; i < points.length; i++) {
             let distance_with_distortion = this.pointDistance(
                 [this.player.x, this.player.y],
                 points[i]
@@ -168,6 +168,17 @@ class RayCast {
         }
     }
 
+    drawRayCast2D(points) {
+        this.context.fillStyle = "green";
+
+        for (const point of points) {
+            this.context.beginPath();
+            this.context.moveTo(this.player.x, this.player.y);
+            this.context.lineTo(point[0], point[1]);
+            this.context.stroke();
+        }
+    }
+
     updateScreen() {
         this.clear();
 
@@ -187,31 +198,26 @@ class RayCast {
                 this.player.move_down();
             }
         }
-        const points = this.drawRayCast2D(this.player);
+
+        const raycast_points = this.rayCast(this.player);
         this.player.update(this.context);
-
-        this.context.fillStyle = "green";
-        for (let b of points) {
-            this.context.beginPath(); // Start a new path
-            this.context.moveTo(this.player.x, this.player.y); // Move the pen to (30, 50)
-            this.context.lineTo(b[0], b[1]); // Draw a line to (150, 100)
-            this.context.stroke(); // Render the path
-        }
-
-        this.draw3dScene(points);
+        this.drawRayCast2D(raycast_points);
+        this.draw3dScene(raycast_points);
     }
 
     pointDistance(p1, p2) {
         return  Math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2);
     }
 
-    drawRayCast2D(from_object) {
+    rayCast(from_object) {
         const NUM_OF_RAYS = 60;
         const ERROR = 10;
         const ONE_DEGREE = Math.PI / 180;
 
         let points = [];
-        let final_points = [];
+        let closest_points = [];
+
+        const object_position = [from_object.x, from_object.y];
 
         const start_angle = from_object.angle - (ONE_DEGREE * 30);
 
@@ -284,21 +290,24 @@ class RayCast {
                 }
             }
 
-            let closest = points.length > 0 ? points[0] : [0,0];
-            let min_distance = 1000000;
+            if (points.length > 0) {
+                let closest = points[0];
+                let minimum_distance = this.pointDistance(object_position, closest);
 
-            for (const point of points) {
-                if (this.pointDistance([from_object.x, from_object.y], point) < min_distance) {
-                    min_distance = this.pointDistance([from_object.x, from_object.y], point);
-                    closest = point;
+                for (const point of points) {
+                    const distance = this.pointDistance(object_position, point);
+                    if (distance < minimum_distance) {
+                        minimum_distance = distance;
+                        closest = point;
+                    }
                 }
-            }
 
-            final_points.push(closest)
-            points = [];
+                closest_points.push(closest)
+                points = [];
+            }
         }
 
-        return final_points
+        return closest_points
     }
 }
 
