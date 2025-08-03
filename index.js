@@ -63,16 +63,6 @@ class RayCast {
         [1,0,0,0,0,0,0,1],
         [1,1,1,1,1,1,1,1],
     ];
-    level_map_mark = [
-        [1,1,1,1,1,1,1,1],
-        [1,0,1,0,0,0,0,1],
-        [1,0,1,0,0,0,0,1],
-        [1,0,1,0,0,0,0,1],
-        [1,0,0,0,0,0,0,1],
-        [1,0,0,0,0,1,0,1],
-        [1,0,0,0,0,0,0,1],
-        [1,1,1,1,1,1,1,1],
-    ];
 
     constructor() {
         this.canvas = document.createElement("canvas");
@@ -235,7 +225,6 @@ class RayCast {
                     const map_y = Math.floor(y / this.ratioX)-1;
 
                     if (map_x >= 0 && map_y >= 0 && map_x < 8 && map_y < 8) {
-                        // this.level_map_mark[map_y][map_x] = 2;
                         if (this.level_map[map_y][map_x] === 1) {
                             points.push([x,y,angle,0]);
                         }
@@ -248,7 +237,6 @@ class RayCast {
                     const map_y = Math.floor(y / this.ratioX);
 
                     if (map_x >= 0 && map_y >= 0 && map_x < 8 && map_y < 8) {
-                        // this.level_map_mark[map_y][map_x] = 2;
                         if (this.level_map[map_y][map_x] === 1) {
                             points.push([x,y,angle,0])
                         }
@@ -268,7 +256,6 @@ class RayCast {
                     const map_y = Math.floor(y / this.ratioX);
 
                     if (map_x >= 0 && map_y >= 0 && map_x < 8 && map_y < 8) {
-                        // this.level_map_mark[map_y][map_x] = 2;
                         if (this.level_map[map_y][map_x] === 1) {
                             points.push([x,y,angle,1])
                         }
@@ -281,7 +268,6 @@ class RayCast {
                     const map_y = Math.floor(y / this.ratioX);
 
                     if (map_x >= 0 && map_y >= 0 && map_x < 8 && map_y < 8) {
-                        // this.level_map_mark[map_y][map_x] = 2;
                         if (this.level_map[map_y][map_x] === 1) {
                             points.push([x,y,angle,1])
                         }
